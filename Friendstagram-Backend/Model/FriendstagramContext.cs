@@ -18,6 +18,7 @@ namespace Friendstagram_Backend.Model
         {
         }
 
+        public virtual DbSet<ChatMessage> ChatMessages { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<FileType> FileTypes { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
@@ -29,7 +30,7 @@ namespace Friendstagram_Backend.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(ConfigurationManager.ConnectionStrings["default"].ConnectionString, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.6.5-mariadb"));
+                optionsBuilder.UseLazyLoadingProxies().UseMySql(ConfigurationManager.ConnectionStrings["default"].ConnectionString, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.6.5-mariadb"));
             }
         }
 
@@ -37,6 +38,38 @@ namespace Friendstagram_Backend.Model
         {
             modelBuilder.HasCharSet("utf8mb3")
                 .UseCollation("utf8mb3_general_ci");
+
+            modelBuilder.Entity<ChatMessage>(entity =>
+            {
+                entity.HasKey(e => new { e.ChatMessageId, e.SenderId })
+                    .HasName("PRIMARY")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+                entity.ToTable("chatMessage");
+
+                entity.HasIndex(e => e.ChatMessageId, "chatMessageId_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.SenderId, "fk_ChatMessage_user1_idx");
+
+                entity.Property(e => e.ChatMessageId)
+                    .HasColumnType("int(11)")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("chatMessageId");
+
+                entity.Property(e => e.SenderId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("senderId");
+
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .HasColumnName("content");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
+            });
 
             modelBuilder.Entity<Comment>(entity =>
             {
@@ -171,6 +204,7 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.ResourceId)
                     .HasColumnType("int(11)")
+                    .ValueGeneratedOnAdd()
                     .HasColumnName("resourceId");
 
                 entity.Property(e => e.FileTypeId)
