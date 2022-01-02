@@ -16,6 +16,7 @@ namespace Friendstagram_Backend.Model
         public int ResourceId { get; set; }
         public string Filename { get; set; }
         public string Path { get; set; }
+        public string PathCompressed { get; set; }
         public int FileTypeId { get; set; }
 
         public virtual FileType FileType { get; set; }

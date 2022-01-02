@@ -10,6 +10,8 @@ namespace Friendstagram_Backend.Model
         public int ChatMessageId { get; set; }
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int SenderId { get; set; }
+        public int UserId { get; set; }
+
+        public virtual User User { get; set; }
     }
 }

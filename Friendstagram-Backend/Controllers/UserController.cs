@@ -9,7 +9,7 @@ namespace Friendstagram_Backend.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : FriendstagramControllerBase
     {
 
     }

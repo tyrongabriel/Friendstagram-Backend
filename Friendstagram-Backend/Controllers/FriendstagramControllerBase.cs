@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
 using Friendstagram_Backend.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -13,7 +14,7 @@ namespace Friendstagram_Backend.Controllers
     public class FriendstagramControllerBase : ControllerBase
     {
         [HttpGet]
-        public Group Get(string GroupCode)
+        public ActionResult<Group> Get(string GroupCode)
         {
             using (FriendstagramContext DBContext = new FriendstagramContext())
             {

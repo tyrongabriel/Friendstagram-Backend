@@ -41,7 +41,7 @@ namespace Friendstagram_Backend.Model
 
             modelBuilder.Entity<ChatMessage>(entity =>
             {
-                entity.HasKey(e => new { e.ChatMessageId, e.SenderId })
+                entity.HasKey(e => new { e.ChatMessageId, e.UserId })
                     .HasName("PRIMARY")
                     .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
@@ -50,16 +50,16 @@ namespace Friendstagram_Backend.Model
                 entity.HasIndex(e => e.ChatMessageId, "chatMessageId_UNIQUE")
                     .IsUnique();
 
-                entity.HasIndex(e => e.SenderId, "fk_ChatMessage_user1_idx");
+                entity.HasIndex(e => e.UserId, "fk_chatMessage_user1_idx");
 
                 entity.Property(e => e.ChatMessageId)
                     .HasColumnType("int(11)")
                     .ValueGeneratedOnAdd()
                     .HasColumnName("chatMessageId");
 
-                entity.Property(e => e.SenderId)
+                entity.Property(e => e.UserId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("senderId");
+                    .HasColumnName("userId");
 
                 entity.Property(e => e.Content)
                     .IsRequired()
@@ -69,6 +69,13 @@ namespace Friendstagram_Backend.Model
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("created_at");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ChatMessages)
+                    .HasPrincipalKey(p => p.UserId)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_chatMessage_user1");
             });
 
             modelBuilder.Entity<Comment>(entity =>
@@ -92,6 +99,10 @@ namespace Friendstagram_Backend.Model
                 entity.Property(e => e.PostId)
                     .HasColumnType("int(11)")
                     .HasColumnName("postId");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
 
                 entity.Property(e => e.Text)
                     .IsRequired()
@@ -133,6 +144,9 @@ namespace Friendstagram_Backend.Model
             {
                 entity.ToTable("group");
 
+                entity.HasIndex(e => e.GroupId, "groupId_UNIQUE")
+                    .IsUnique();
+
                 entity.HasIndex(e => e.Code, "group_code_UNIQUE")
                     .IsUnique();
 
@@ -153,13 +167,15 @@ namespace Friendstagram_Backend.Model
 
             modelBuilder.Entity<Post>(entity =>
             {
-                entity.HasKey(e => new { e.PostId, e.ResourceId })
+                entity.HasKey(e => new { e.PostId, e.ResourceId, e.UserId })
                     .HasName("PRIMARY")
-                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
                 entity.ToTable("post");
 
                 entity.HasIndex(e => e.ResourceId, "fk_post_resource1_idx");
+
+                entity.HasIndex(e => e.UserId, "fk_post_user1_idx");
 
                 entity.HasIndex(e => e.PostId, "id_post_UNIQUE")
                     .IsUnique();
@@ -172,6 +188,14 @@ namespace Friendstagram_Backend.Model
                 entity.Property(e => e.ResourceId)
                     .HasColumnType("int(11)")
                     .HasColumnName("resourceId");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("userId");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(200)
@@ -187,6 +211,13 @@ namespace Friendstagram_Backend.Model
                     .HasForeignKey(d => d.ResourceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_post_resource1");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Posts)
+                    .HasPrincipalKey(p => p.UserId)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_post_user1");
             });
 
             modelBuilder.Entity<Resource>(entity =>
@@ -221,6 +252,11 @@ namespace Friendstagram_Backend.Model
                     .HasMaxLength(45)
                     .HasColumnName("path");
 
+                entity.Property(e => e.PathCompressed)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("path_compressed");
+
                 entity.HasOne(d => d.FileType)
                     .WithMany(p => p.Resources)
                     .HasForeignKey(d => d.FileTypeId)
@@ -242,6 +278,9 @@ namespace Friendstagram_Backend.Model
                 entity.HasIndex(e => e.GroupId, "fk_user_group1_idx");
 
                 entity.HasIndex(e => e.ProfilePictureId, "fk_user_resource1_idx");
+
+                entity.HasIndex(e => e.UserId, "userId_UNIQUE")
+                    .IsUnique();
 
                 entity.HasIndex(e => e.Username, "username_UNIQUE")
                     .IsUnique();
