@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using Friendstagram_Backend.Model;
 using Microsoft.EntityFrameworkCore;
+using Friendstagram_Backend.DTOs;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -14,13 +15,13 @@ namespace Friendstagram_Backend.Controllers
     public class FriendstagramControllerBase : ControllerBase
     {
         [HttpGet]
-        public ActionResult<Group> Get(string GroupCode)
+        public ActionResult<GroupDto> Get(string GroupCode)
         {
             using (FriendstagramContext DBContext = new FriendstagramContext())
             {
                 if (DBContext.Database.CanConnect())
                 {
-                    return DBContext.Groups.FirstOrDefault(g => g.Code == GroupCode);
+                    return DBContext.Groups.FirstOrDefault(g => g.Code == GroupCode).AsDto();
                 }
                 else
                 {

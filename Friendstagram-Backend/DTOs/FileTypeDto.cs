@@ -7,14 +7,7 @@ namespace Friendstagram_Backend.DTOs
 {
     public partial class FileTypeDto
     {
-        public FileTypeDto()
-        {
-            Resources = new HashSet<ResourceDto>();
-        }
-
-        public int TypeId { get; set; }
-        public string Name { get; set; }
-
-        public virtual ICollection<ResourceDto> Resources { get; set; }
+        public int id_fileType { get; set; }
+        public string name { get; set; }
     }
 }

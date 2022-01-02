@@ -58,5 +58,37 @@ namespace Friendstagram_Backend
             };
         }
 
+        public static ResourceDto AsDto(this Resource resource)
+        {
+            return new ResourceDto()
+            {
+                id_resource = resource.ResourceId,
+                filename = resource.Filename,
+                path = resource.Path,
+                path_compressed = resource.PathCompressed,
+                fileType = resource.FileType.AsDto()
+            };
+        }
+
+        public static GroupDto AsDto(this Group group)
+        {
+            return new GroupDto()
+            {
+                id_group = group.GroupId,
+                name = group.Name,
+                code = group.Code,
+                users = group.Users.Select(u => u.AsDto()).ToList()
+            };
+        }
+
+        public static FileTypeDto AsDto(this FileType fileType)
+        {
+            return new FileTypeDto()
+            {
+                id_fileType = fileType.TypeId,
+                name = fileType.Name
+            };
+        }
+
     }
 }
