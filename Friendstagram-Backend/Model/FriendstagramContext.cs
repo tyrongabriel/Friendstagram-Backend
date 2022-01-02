@@ -249,12 +249,12 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Path)
                     .IsRequired()
-                    .HasMaxLength(45)
+                    .HasMaxLength(250)
                     .HasColumnName("path");
 
                 entity.Property(e => e.PathCompressed)
                     .IsRequired()
-                    .HasMaxLength(45)
+                    .HasMaxLength(250)
                     .HasColumnName("path_compressed");
 
                 entity.HasOne(d => d.FileType)
