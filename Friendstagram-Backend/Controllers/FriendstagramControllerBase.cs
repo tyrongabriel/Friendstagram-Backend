@@ -11,9 +11,15 @@ using Friendstagram_Backend.DTOs;
 namespace Friendstagram_Backend.Controllers
 {
     [ApiController]
-    [Route("api/{GroupCode}")]
+    [Route("api/")]
     public class FriendstagramControllerBase : ControllerBase
     {
+        protected FriendstagramContext DBContext;
+        public FriendstagramControllerBase(FriendstagramContext dbContext)
+        {
+            DBContext = dbContext;
+        }
+
         [HttpGet]
         public ActionResult<GroupDto> Get(string GroupCode)
         {

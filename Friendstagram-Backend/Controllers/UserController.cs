@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Friendstagram_Backend.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace Friendstagram_Backend.Controllers
 {
-    [Route("[controller]")]
+    [Route("{GroupCode}/[controller]")]
     [ApiController]
     public class UserController : FriendstagramControllerBase
     {
+        public UserController(FriendstagramContext dbContext) : base(dbContext)
+        {
 
+        }
     }
 }
