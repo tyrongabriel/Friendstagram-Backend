@@ -7,6 +7,7 @@ using System.Configuration;
 using Friendstagram_Backend.Model;
 using Microsoft.EntityFrameworkCore;
 using Friendstagram_Backend.DTOs;
+using Friendstagram_Backend.Interfaces;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -15,25 +16,14 @@ namespace Friendstagram_Backend.Controllers
     public class FriendstagramControllerBase : ControllerBase
     {
         protected FriendstagramContext DBContext;
-        public FriendstagramControllerBase(FriendstagramContext dbContext)
+        protected IJwtAuthenticationManager JwtAuthenticationManager;
+
+        public FriendstagramControllerBase(FriendstagramContext dbContext, IJwtAuthenticationManager jwtAuthenticationManager)
         {
             DBContext = dbContext;
+            JwtAuthenticationManager = jwtAuthenticationManager;
         }
 
-        [HttpGet]
-        public ActionResult<GroupDto> Get(string GroupCode)
-        {
-            using (FriendstagramContext DBContext = new FriendstagramContext())
-            {
-                if (DBContext.Database.CanConnect())
-                {
-                    return DBContext.Groups.FirstOrDefault(g => g.Code == GroupCode).AsDto();
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        
     }
 }

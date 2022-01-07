@@ -240,7 +240,8 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.FileTypeId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("fileTypeId");
+                    .HasColumnName("fileTypeId")
+                    .HasDefaultValueSql("'1'");
 
                 entity.Property(e => e.Filename)
                     .IsRequired()
@@ -299,7 +300,8 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.ProfilePictureId)
                     .HasColumnType("int(11)")
-                    .HasColumnName("profilePictureId");
+                    .HasColumnName("profilePictureId")
+                    .HasDefaultValueSql("'1'");
 
                 entity.Property(e => e.Email)
                     .IsRequired()

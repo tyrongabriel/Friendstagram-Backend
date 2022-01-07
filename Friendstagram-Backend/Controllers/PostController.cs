@@ -1,4 +1,6 @@
-﻿using Friendstagram_Backend.Model;
+﻿using Friendstagram_Backend.Interfaces;
+using Friendstagram_Backend.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace Friendstagram_Backend.Controllers
 {
+    [Authorize]
     [Route("{GroupCode}/[controller]")]
     [ApiController]
     public class PostController : FriendstagramControllerBase
     {
-        public PostController(FriendstagramContext dbContext) : base(dbContext)
+        public PostController(FriendstagramContext dbContext, IJwtAuthenticationManager jwtAuthenticationManager) : base(dbContext, jwtAuthenticationManager)
         {
 
         }
