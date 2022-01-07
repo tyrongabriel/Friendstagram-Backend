@@ -23,7 +23,6 @@ namespace Friendstagram_Backend.Controllers
             DBContext = dbContext;
             JwtAuthenticationManager = jwtAuthenticationManager;
         }
-
         
     }
 }

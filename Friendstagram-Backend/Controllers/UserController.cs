@@ -15,7 +15,7 @@ using System.Security.Claims;
 namespace Friendstagram_Backend.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : FriendstagramControllerBase
     {
@@ -30,10 +30,10 @@ namespace Friendstagram_Backend.Controllers
         public ActionResult<UserDto> GetUser(string email)
         {
             var user = this.User as ClaimsPrincipal;
-            User gottenUser = DBContext.Users.FirstOrDefault(u => u.Email == email);
+            User gottenUser = DBContext.Users.ToList().FirstOrDefault(u => u.Email == email && u.GroupId == Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value));
             if (gottenUser == null)
             {
-                return NotFound($"Could not find a user with the email \"{email}\"");
+                return NotFound($"Could not find a user with the email \"{email}\" in your group");
             }
             return Ok(gottenUser.AsDto());
         }
@@ -53,7 +53,7 @@ namespace Friendstagram_Backend.Controllers
             return Ok(token);
         }
 
-        // POST api/login/register
+        // POST api/user/register
         [AllowAnonymous]
         [HttpPost("register")]
         public ActionResult<UserDto> Register([FromBody] RegisterDto userCredits)
@@ -87,8 +87,7 @@ namespace Friendstagram_Backend.Controllers
             };
             DBContext.Users.Add(RegisteredUser);
             DBContext.SaveChanges();
-
-            return CreatedAtAction(nameof(UserController.GetUser), DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
+            return CreatedAtAction(nameof(GetUser), new { userCredits.email }, DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
         }
     }
 }

@@ -34,6 +34,8 @@ namespace Friendstagram_Backend
             services.AddSingleton<FriendstagramContext>();
             services.AddSingleton<SecurityHelper>();
 
+
+            #region JWT
             string key = ConfigurationManager.AppSettings["Private Key"];
             services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(new SecurityHelper(), new FriendstagramContext(), key));
 
@@ -53,12 +55,19 @@ namespace Friendstagram_Backend
                     ValidateAudience = false
                 };
             });
+            #endregion
 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Friendstagram_Backend", Version = "v1" });
+            });
+
+
+            services.AddMvc(options =>
+            {
+                options.SuppressAsyncSuffixInActionNames = false;
             });
         }
 
