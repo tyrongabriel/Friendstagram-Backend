@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -15,11 +16,11 @@ namespace Friendstagram_Backend.Model
         private readonly string Key;
         private FriendstagramContext DBContext;
         private SecurityHelper SecurityManager;
-        public JwtAuthenticationManager(SecurityHelper securityManager, FriendstagramContext dbContext, string key)
+        public JwtAuthenticationManager(SecurityHelper securityManager, FriendstagramContext dbContext)
         {
             SecurityManager = securityManager;
             DBContext = dbContext;
-            Key = key;
+            Key = ConfigurationManager.AppSettings["Private Key"];
         }
 
         public string Authenticate(string email, string password)
@@ -37,7 +38,8 @@ namespace Friendstagram_Backend.Model
                 Subject = new ClaimsIdentity(new Claim[]{
                     new Claim(ClaimTypes.Email, email),
                     new Claim(ClaimTypes.Name, authUser.Username),
-                    new Claim("GroupId", Convert.ToString(authUser.GroupId))
+                    new Claim("GroupId", Convert.ToString(authUser.GroupId)),
+                    new Claim("Verified", Convert.ToString(Convert.ToInt32(authUser.Verified)))
                 }),
                 Expires = DateTime.UtcNow.AddYears(1),
                 SigningCredentials = new SigningCredentials(

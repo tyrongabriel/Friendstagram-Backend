@@ -25,17 +25,24 @@ namespace Friendstagram_Backend.Controllers
             SecurityManager = securityManager;
         }
 
-        // GET api/user/
-        [HttpGet("{email}")]
-        public ActionResult<UserDto> GetUser(string email)
+        // GET api/user/{username}
+        [HttpGet("{username}")]
+        public IActionResult GetUser(string username)
         {
-            var user = this.User as ClaimsPrincipal;
-            User gottenUser = DBContext.Users.ToList().FirstOrDefault(u => u.Email == email && u.GroupId == Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value));
-            if (gottenUser == null)
+            try
             {
-                return NotFound($"Could not find a user with the email \"{email}\" in your group");
+                var user = this.User.GetUser();
+                User gottenUser = DBContext.Users.ToList().FirstOrDefault(u => u.Username == username && u.GroupId == user.GroupId);
+                if (gottenUser == null)
+                {
+                    return NotFound($"Could not find a user with the username \"{username}\" in your group");
+                }
+                return Ok(gottenUser.AsDto());
             }
-            return Ok(gottenUser.AsDto());
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
         }
 
         // POST api/user/authenticate

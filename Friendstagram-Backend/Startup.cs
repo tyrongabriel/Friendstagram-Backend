@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,13 +32,20 @@ namespace Friendstagram_Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<FriendstagramContext>();
+            //services.AddSingleton<FriendstagramContext>();
+
+            services.AddDbContextPool<FriendstagramContext>(options =>
+            {
+                options.UseLazyLoadingProxies().UseMySql(ConfigurationManager.ConnectionStrings["default"].ConnectionString, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.6.5-mariadb"));
+            });
+
             services.AddSingleton<SecurityHelper>();
 
 
             #region JWT
             string key = ConfigurationManager.AppSettings["Private Key"];
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(new SecurityHelper(), new FriendstagramContext(), key));
+            services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
+            // new JwtAuthenticationManager(new SecurityHelper(), new FriendstagramContext(), key)
 
             services.AddAuthentication(a =>
             {

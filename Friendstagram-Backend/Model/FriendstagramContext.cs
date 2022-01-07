@@ -9,13 +9,10 @@ namespace Friendstagram_Backend.Model
 {
     public partial class FriendstagramContext : DbContext
     {
-        public FriendstagramContext()
-        {
-        }
-
         public FriendstagramContext(DbContextOptions<FriendstagramContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<ChatMessage> ChatMessages { get; set; }

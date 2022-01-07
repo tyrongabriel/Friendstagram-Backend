@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Friendstagram_Backend.DTOs;
 using Friendstagram_Backend.Model;
@@ -87,6 +88,18 @@ namespace Friendstagram_Backend
             {
                 id_fileType = fileType.TypeId,
                 name = fileType.Name
+            };
+        }
+
+        public static User GetUser(this ClaimsPrincipal user)
+        {
+            return new User()
+            {
+                UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value),
+                Username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value,
+                Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
+                GroupId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value),
+                Verified = Convert.ToSByte(Convert.ToUInt32(user.Claims.FirstOrDefault(c => c.Type == "Verified").Value))
             };
         }
 
