@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Friendstagram_Backend.Controllers
 {
     [Authorize]
-    [Route("/{GroupCode}")]
+    [Route("api/[controller]")]
     [ApiController]
     public class GroupController : FriendstagramControllerBase
     {
@@ -19,6 +19,8 @@ namespace Friendstagram_Backend.Controllers
         {
 
         }
+
+
 
         // GET api/{GroupCode}
         //[HttpGet]

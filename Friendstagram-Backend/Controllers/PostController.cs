@@ -11,13 +11,20 @@ using System.Threading.Tasks;
 namespace Friendstagram_Backend.Controllers
 {
     [Authorize]
-    [Route("{GroupCode}/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PostController : FriendstagramControllerBase
     {
         public PostController(FriendstagramContext dbContext, IJwtAuthenticationManager jwtAuthenticationManager) : base(dbContext, jwtAuthenticationManager)
         {
 
+        }
+
+
+        [HttpGet("")]
+        public IActionResult GetPost()
+        {
+            return NotFound();
         }
     }
 }
