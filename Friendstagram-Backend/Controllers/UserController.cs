@@ -86,7 +86,7 @@ namespace Friendstagram_Backend.Controllers
 
         // POST api/user/changeUsername
         [HttpPost("changePassword")]
-        public IActionResult ChangeUsername([FromBody] ChangePasswordDto changePassword)
+        public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword)
         {
 
             try
