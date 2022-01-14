@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Diagnostics;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -31,13 +32,51 @@ namespace Friendstagram_Backend.Controllers
         {
             try
             {
-                var user = this.User.GetUser();
-                User gottenUser = DBContext.Users.ToList().FirstOrDefault(u => u.Username == username && u.GroupId == user.GroupId);
+                User gottenUser;
+                this.User.GetUser(DBContext, out gottenUser);
                 if (gottenUser == null)
                 {
                     return NotFound($"Could not find a user with the username \"{username}\" in your group");
                 }
                 return Ok(gottenUser.AsDto());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+        }
+
+        // GET api/user
+        [HttpGet]
+        public IActionResult GetLoggedInUser()
+        {
+            try
+            {
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser, true);
+                return Ok(thisUser.AsDto());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+        }
+
+        // POST api/user/changeUsername
+        [HttpPost("changeUsername")]
+        public IActionResult ChangeUsername([FromBody] ChangeUsernameDto changeUser)
+        {
+            
+            try
+            {
+                User newUser;
+                this.User.GetUser(DBContext, out newUser);
+                newUser.Username = changeUser.usernameNew;
+                DBContext.SaveChanges();
+
+                UserDto newUserDto = DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
+
+                return CreatedAtAction(nameof(GetUser), new { newUserDto.username }, newUserDto);
             }
             catch (Exception ex)
             {
@@ -94,7 +133,7 @@ namespace Friendstagram_Backend.Controllers
             };
             DBContext.Users.Add(RegisteredUser);
             DBContext.SaveChanges();
-            return CreatedAtAction(nameof(GetUser), new { userCredits.email }, DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
+            return CreatedAtAction(nameof(GetUser), new { userCredits.username }, DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
         }
     }
 }

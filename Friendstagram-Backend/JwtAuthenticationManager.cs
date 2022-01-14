@@ -36,10 +36,7 @@ namespace Friendstagram_Backend.Model
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]{
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Name, authUser.Username),
-                    new Claim("GroupId", Convert.ToString(authUser.GroupId)),
-                    new Claim("Verified", Convert.ToString(Convert.ToInt32(authUser.Verified)))
+                    new Claim("UserId", Convert.ToString(authUser.UserId))
                 }),
                 Expires = DateTime.UtcNow.AddYears(1),
                 SigningCredentials = new SigningCredentials(
@@ -49,5 +46,7 @@ namespace Friendstagram_Backend.Model
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+
     }
 }

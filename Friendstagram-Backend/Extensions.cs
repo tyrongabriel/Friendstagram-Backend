@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Friendstagram_Backend.DTOs;
 using Friendstagram_Backend.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Friendstagram_Backend
 {
@@ -91,16 +93,24 @@ namespace Friendstagram_Backend
             };
         }
 
-        public static User GetUser(this ClaimsPrincipal user)
+        public static void GetUser(this ClaimsPrincipal user, FriendstagramContext DBContext, out User GottenUser, bool loadProfilePicture = false)
         {
-            return new User()
+            //User gotUser = new User(){
+            //    UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
+            //    Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
+            //    GroupId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value),
+            //    Verified = Convert.ToSByte(Convert.ToUInt32(user.Claims.FirstOrDefault(c => c.Type == "Verified").Value))
+            //};
+            //gotUser = DBContext.Users.FirstOrDefault(u => u.UserId == gotUser.UserId);
+            int id = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            if (loadProfilePicture)
             {
-                UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value),
-                Username = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value,
-                Email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
-                GroupId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "GroupId").Value),
-                Verified = Convert.ToSByte(Convert.ToUInt32(user.Claims.FirstOrDefault(c => c.Type == "Verified").Value))
-            };
+                GottenUser = DBContext.Users.FirstOrDefault(u => u.UserId == id);
+            }
+            else
+            {
+                GottenUser = DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == id);
+            }
         }
 
     }
