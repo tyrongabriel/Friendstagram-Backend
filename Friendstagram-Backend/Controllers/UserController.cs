@@ -84,6 +84,41 @@ namespace Friendstagram_Backend.Controllers
             }
         }
 
+        // POST api/user/changeUsername
+        [HttpPost("changePassword")]
+        public IActionResult ChangeUsername([FromBody] ChangePasswordDto changePassword)
+        {
+
+            try
+            {
+                User newUser;
+                this.User.GetUser(DBContext, out newUser, true);
+                if (newUser.Password == SecurityManager.CreateSha256Hash(changePassword.password, newUser.Salt))
+                {
+                    string newSalt = SecurityManager.CreateSalt();
+                    string hashedPassword = SecurityManager.CreateSha256Hash(changePassword.newPassword, newSalt);
+
+                    newUser.Password = hashedPassword;
+                    newUser.Salt = newSalt;
+
+                    DBContext.SaveChanges();
+
+                    UserDto newUserDto = newUser.AsDto();
+                    return CreatedAtAction(nameof(GetUser), new { newUserDto.username }, newUserDto);
+                }
+                else
+                {
+                    return Unauthorized("Wrong Password");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+        }
+
+
+
         // POST api/user/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]

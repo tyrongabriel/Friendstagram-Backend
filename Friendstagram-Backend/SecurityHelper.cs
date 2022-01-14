@@ -26,7 +26,13 @@ namespace Friendstagram_Backend
 
         public string CreateSha256Hash(string input, string salt)
         {
-            var SHA256Bytes = Convert.FromBase64String(input + salt);
+            // !!! Needs to be length multiple of 4
+            string SHA256String = input + salt;
+            if (SHA256String.Length % 4 != 0)
+            {
+                SHA256String += string.Concat(Enumerable.Repeat("=", (4 - (SHA256String.Length % 4))));
+            }
+            var SHA256Bytes = Convert.FromBase64String(SHA256String);
             using (var SHA256Manager = new SHA256Managed())
             {
                 var hash = SHA256Manager.ComputeHash(SHA256Bytes);
