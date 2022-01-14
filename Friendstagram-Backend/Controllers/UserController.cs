@@ -32,13 +32,15 @@ namespace Friendstagram_Backend.Controllers
         {
             try
             {
-                User gottenUser;
-                this.User.GetUser(DBContext, out gottenUser);
-                if (gottenUser == null)
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser);
+
+                User foundUser = DBContext.Users.FirstOrDefault(u => u.Username == username && u.GroupId == thisUser.GroupId);
+                if (foundUser == null)
                 {
                     return NotFound($"Could not find a user with the username \"{username}\" in your group");
                 }
-                return Ok(gottenUser.AsDto());
+                return Ok(foundUser.AsDto());
             }
             catch (Exception ex)
             {
@@ -48,68 +50,83 @@ namespace Friendstagram_Backend.Controllers
 
         // GET api/user
         [HttpGet]
-        public IActionResult GetLoggedInUser()
+        public IActionResult GetUsers()
+        {
+            try
+            {
+                User thisUser;
+                User.GetUser(DBContext, out thisUser);
+                List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+        }
+
+        // PATCH api/user/changeUsername/username
+        [HttpPatch("changeUsername/{username}")]
+        public IActionResult ChangeUsername([FromBody] ChangeUsernameDto changeUser, string username)
+        {            
+            try
+            {
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser, true);
+                if (thisUser.Username == username)
+                {
+                    thisUser.Username = changeUser.usernameNew;
+                    DBContext.SaveChanges();
+
+                    UserDto newUserDto = thisUser.AsDto(); // DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
+
+                    return Ok(newUserDto);
+                }
+                else
+                {
+                    return Unauthorized("Unable to change username of another user!");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+        }
+
+        // PATCH api/user/changePassword/username
+        [HttpPatch("changePassword/{username}")]
+        public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword, string username)
         {
             try
             {
                 User thisUser;
                 this.User.GetUser(DBContext, out thisUser, true);
-                return Ok(thisUser.AsDto());
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
-        }
-
-        // POST api/user/changeUsername
-        [HttpPost("changeUsername")]
-        public IActionResult ChangeUsername([FromBody] ChangeUsernameDto changeUser)
-        {
-            
-            try
-            {
-                User newUser;
-                this.User.GetUser(DBContext, out newUser, true);
-                newUser.Username = changeUser.usernameNew;
-                DBContext.SaveChanges();
-
-                UserDto newUserDto = newUser.AsDto(); // DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
-
-                return CreatedAtAction(nameof(GetUser), new { newUserDto.username }, newUserDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
-        }
-
-        // POST api/user/changeUsername
-        [HttpPost("changePassword")]
-        public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword)
-        {
-
-            try
-            {
-                User newUser;
-                this.User.GetUser(DBContext, out newUser, true);
-                if (newUser.Password == SecurityManager.CreateSha256Hash(changePassword.password, newUser.Salt))
+                if (thisUser.Username == username)
                 {
-                    string newSalt = SecurityManager.CreateSalt();
-                    string hashedPassword = SecurityManager.CreateSha256Hash(changePassword.newPassword, newSalt);
+                    if (thisUser.Password == SecurityManager.CreateSha256Hash(changePassword.password, thisUser.Salt))
+                    {
+                        string newSalt = SecurityManager.CreateSalt();
+                        string hashedPassword = SecurityManager.CreateSha256Hash(changePassword.newPassword, newSalt);
 
-                    newUser.Password = hashedPassword;
-                    newUser.Salt = newSalt;
+                        thisUser.Password = hashedPassword;
+                        thisUser.Salt = newSalt;
 
-                    DBContext.SaveChanges();
+                        DBContext.SaveChanges();
 
-                    UserDto newUserDto = newUser.AsDto();
-                    return CreatedAtAction(nameof(GetUser), new { newUserDto.username }, newUserDto);
+                        UserDto newUserDto = thisUser.AsDto();
+                        return Ok(newUserDto);
+                    }
+                    else
+                    {
+                        return Unauthorized("Wrong Password!");
+                    }
                 }
                 else
                 {
-                    return Unauthorized("Wrong Password");
+                    return Unauthorized("Unable to change username of another user!");
                 }
+                
             }
             catch (Exception ex)
             {
