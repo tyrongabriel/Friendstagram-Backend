@@ -70,11 +70,11 @@ namespace Friendstagram_Backend.Controllers
             try
             {
                 User newUser;
-                this.User.GetUser(DBContext, out newUser);
+                this.User.GetUser(DBContext, out newUser, true);
                 newUser.Username = changeUser.usernameNew;
                 DBContext.SaveChanges();
 
-                UserDto newUserDto = DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
+                UserDto newUserDto = newUser.AsDto(); // DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
 
                 return CreatedAtAction(nameof(GetUser), new { newUserDto.username }, newUserDto);
             }
