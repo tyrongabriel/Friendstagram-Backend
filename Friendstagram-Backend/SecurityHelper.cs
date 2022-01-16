@@ -12,6 +12,7 @@ namespace Friendstagram_Backend
         // https://stackoverflow.com/questions/13378815/base64-length-calculation Length Calc. Needed --> 60 is the String Length
         public const int SaltLength = (64/4)*3;
         public const int SHA256Length = (64/4)*3;
+        public const int VerificationCodeLength = (16 / 4) * 3;
 
         public string CreateSalt()
         {
@@ -44,12 +45,12 @@ namespace Friendstagram_Backend
 
         public string CreateVerifcationCode()
         {
-            var verificationBytes = new byte[16];
+            var verificationBytes = new byte[VerificationCodeLength];
             using (var provider = new RNGCryptoServiceProvider())
             {
                 provider.GetBytes(verificationBytes);
             }
-            return Encoding.ASCII.GetString(verificationBytes);
+            return Convert.ToBase64String(verificationBytes);
         }
     }
 }
