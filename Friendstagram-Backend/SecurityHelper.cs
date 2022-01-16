@@ -10,14 +10,15 @@ namespace Friendstagram_Backend
     public class SecurityHelper
     {
         // https://stackoverflow.com/questions/13378815/base64-length-calculation Length Calc. Needed --> 60 is the String Length
-        public const int SaltLength = (60/4) * 3;
-        public const int SHA256Length = (64 / 4) * 3;
+        public const int SaltLength = (64/4)*3;
+        public const int SHA256Length = (64/4)*3;
 
         public string CreateSalt()
         {
             var saltBytes = new byte[SaltLength];
             using (var provider = new RNGCryptoServiceProvider())
             {
+                provider.GetHashCode();
                 provider.GetBytes(saltBytes);
             }
 
@@ -27,13 +28,11 @@ namespace Friendstagram_Backend
         public string CreateSha256Hash(string input, string salt)
         {
             // !!! Needs to be length multiple of 4
-            string SHA256String = input + salt;
-            if (SHA256String.Length % 4 != 0)
-            {
-                int neededChars = (4 - (SHA256String.Length % 4));
-                SHA256String += string.Concat(Enumerable.Repeat("=", Math.Min(neededChars,2)));
+            var inputBytes = ASCIIEncoding.ASCII.GetBytes(input);
+            var saltBytes = Convert.FromBase64String(salt);
+            IEnumerable<byte> combinedBytes = inputBytes.Concat(saltBytes);
+            string SHA256String = Convert.ToBase64String(combinedBytes.ToArray());
 
-            }
             var SHA256Bytes = Convert.FromBase64String(SHA256String);
             using (var SHA256Manager = new SHA256Managed())
             {
@@ -45,7 +44,7 @@ namespace Friendstagram_Backend
 
         public string CreateVerifcationCode()
         {
-            var verificationBytes = new byte[(30 / 4) * 3];
+            var verificationBytes = new byte[16];
             using (var provider = new RNGCryptoServiceProvider())
             {
                 provider.GetBytes(verificationBytes);

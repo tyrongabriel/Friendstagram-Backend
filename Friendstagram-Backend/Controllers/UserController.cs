@@ -135,7 +135,6 @@ namespace Friendstagram_Backend.Controllers
         }
 
 
-
         // POST api/user/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
@@ -148,12 +147,12 @@ namespace Friendstagram_Backend.Controllers
                 return Unauthorized();
             }
 
-            return Ok(token);
+            return Ok(new JWTTokenDto() { token = token });
         }
 
-        // POST api/user/register
+        // POST api/user
         [AllowAnonymous]
-        [HttpPost("register")]
+        [HttpPost()]
         public ActionResult<UserDto> Register([FromBody] RegisterDto userCredits)
         {
             Group registerIntoGroup = DBContext.Groups.FirstOrDefault(g => g.Code == userCredits.groupCode);
@@ -164,11 +163,11 @@ namespace Friendstagram_Backend.Controllers
             }
             else if (DBContext.Users.Any(u => u.Email == userCredits.email))
             {
-                return StatusCode(StatusCodes.Status405MethodNotAllowed, "User with that email already exists");
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, "User with that email already exists");
             }
             else if (DBContext.Users.Any(u => u.Username == userCredits.username))
             {
-                return StatusCode(StatusCodes.Status405MethodNotAllowed, "User with that username already exists");
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, "User with that username already exists");
             }
 
             string salt = SecurityManager.CreateSalt();
