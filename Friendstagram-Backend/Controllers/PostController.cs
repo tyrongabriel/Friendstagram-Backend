@@ -21,7 +21,7 @@ namespace Friendstagram_Backend.Controllers
         }
 
         // 
-        [HttpGet("")]
+        [HttpGet]
         public IActionResult GetPost()
         {
             return NotFound();
