@@ -19,7 +19,6 @@ namespace Friendstagram_Backend
             var saltBytes = new byte[SaltLength];
             using (var provider = new RNGCryptoServiceProvider())
             {
-                provider.GetHashCode();
                 provider.GetBytes(saltBytes);
             }
 

@@ -79,7 +79,8 @@ namespace Friendstagram_Backend.Controllers
             User.GetUser(DBContext, out thisUser, true);
             if (thisUser.Username == username)
             {
-                
+                DBContext.Resources.Add(image.AsResource(DBContext));
+                DBContext.SaveChanges();
             }
             return Ok(thisUser.AsDto());
         }

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Friendstagram_Backend.DTOs;
 using Friendstagram_Backend.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Friendstagram_Backend
@@ -111,6 +112,30 @@ namespace Friendstagram_Backend
             {
                 GottenUser = DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == id);
             }
+        }
+
+        public static Resource AsResource(this IFormFile file, FriendstagramContext DBContext)
+        {
+            string FileName = file.FileName.Substring(0, file.FileName.LastIndexOf('.'));
+            string FileTypeName = file.FileName.Substring(file.FileName.LastIndexOf('.') + 1);
+            FileType type = DBContext.FileTypes.FirstOrDefault(f => f.Name == FileTypeName);
+            if (type == null)
+            {
+                type = new FileType()
+                {
+                    Name = FileTypeName
+                };
+            }
+
+            Resource newFile = new Resource()
+            {
+                Filename = FileName,
+                Path = $"images/profiles/{FileName}.{type.Name}",
+                PathCompressed = $"images/profiles/{FileName}.{type.Name}",
+                FileType = type
+            };
+
+            return newFile;
         }
 
     }
