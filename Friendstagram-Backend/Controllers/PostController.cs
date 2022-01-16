@@ -20,7 +20,7 @@ namespace Friendstagram_Backend.Controllers
 
         }
 
-
+        // 
         [HttpGet("")]
         public IActionResult GetPost()
         {

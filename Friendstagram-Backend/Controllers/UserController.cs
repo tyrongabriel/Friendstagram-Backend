@@ -65,7 +65,7 @@ namespace Friendstagram_Backend.Controllers
             }
         }
 
-        // PATCH api/user/changeUsername/username
+        // PATCH api/user/changeUsername/{username}
         [HttpPatch("changeUsername/{username}")]
         public IActionResult ChangeUsername([FromBody] ChangeUsernameDto changeUser, string username)
         {            
@@ -94,7 +94,7 @@ namespace Friendstagram_Backend.Controllers
             }
         }
 
-        // PATCH api/user/changePassword/username
+        // PATCH api/user/changePassword/{username}
         [HttpPatch("changePassword/{username}")]
         public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword, string username)
         {
@@ -133,7 +133,6 @@ namespace Friendstagram_Backend.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
         }
-
 
         // POST api/user/authenticate
         [AllowAnonymous]
