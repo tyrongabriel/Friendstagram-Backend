@@ -73,13 +73,13 @@ namespace Friendstagram_Backend.Controllers
 
         // PUT api/user/changeProfilePicture/{username}
         [HttpPost("changeProfilePicture/{username}")]
-        public HttpResponseMessage ChangeProfilePicture(string username)
+        public IActionResult ChangeProfilePicture(string username)
         {
             User thisUser;
             User.GetUser(DBContext, out thisUser, true);
             if (thisUser.Username == username)
             {
-                Request
+
             }
             return Ok(thisUser.AsDto());
         }
