@@ -8,10 +8,12 @@ using Friendstagram_Backend.Model;
 using Microsoft.EntityFrameworkCore;
 using Friendstagram_Backend.DTOs;
 using Friendstagram_Backend.Interfaces;
+using Microsoft.AspNetCore.Cors;
 
 namespace Friendstagram_Backend.Controllers
 {
     [ApiController]
+    [EnableCors]
     [Route("api/")]
     public class FriendstagramControllerBase : ControllerBase
     {

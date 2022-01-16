@@ -12,10 +12,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Net;
+using System.Web;
+using System.IO;
+using Microsoft.AspNetCore.Cors;
 
 namespace Friendstagram_Backend.Controllers
 {
     [Authorize]
+    [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : FriendstagramControllerBase
@@ -63,6 +69,19 @@ namespace Friendstagram_Backend.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
+        }
+
+        // PUT api/user/changeProfilePicture/{username}
+        [HttpPost("changeProfilePicture/{username}")]
+        public HttpResponseMessage ChangeProfilePicture(string username)
+        {
+            User thisUser;
+            User.GetUser(DBContext, out thisUser, true);
+            if (thisUser.Username == username)
+            {
+                Request
+            }
+            return Ok(thisUser.AsDto());
         }
 
         // PATCH api/user/changeUsername/{username}

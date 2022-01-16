@@ -91,6 +91,10 @@ namespace Friendstagram_Backend
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
+            app.UseCors();
+
             app.UseRouting();
 
             app.UseAuthentication();
