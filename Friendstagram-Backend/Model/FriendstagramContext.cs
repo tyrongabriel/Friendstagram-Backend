@@ -12,7 +12,6 @@ namespace Friendstagram_Backend.Model
         public FriendstagramContext(DbContextOptions<FriendstagramContext> options)
             : base(options)
         {
-
         }
 
         public virtual DbSet<ChatMessage> ChatMessages { get; set; }
@@ -133,7 +132,7 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(45)
+                    .HasMaxLength(64)
                     .HasColumnName("name");
             });
 
@@ -158,7 +157,7 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(45)
+                    .HasMaxLength(64)
                     .HasColumnName("name");
             });
 
@@ -242,7 +241,7 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Filename)
                     .IsRequired()
-                    .HasMaxLength(45)
+                    .HasMaxLength(64)
                     .HasColumnName("filename");
 
                 entity.Property(e => e.Path)
@@ -302,7 +301,7 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Email)
                     .IsRequired()
-                    .HasMaxLength(60)
+                    .HasMaxLength(64)
                     .HasColumnName("email");
 
                 entity.Property(e => e.Password)
@@ -312,17 +311,17 @@ namespace Friendstagram_Backend.Model
 
                 entity.Property(e => e.Salt)
                     .IsRequired()
-                    .HasMaxLength(60)
+                    .HasMaxLength(64)
                     .HasColumnName("salt");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasMaxLength(40)
+                    .HasMaxLength(64)
                     .HasColumnName("username");
 
                 entity.Property(e => e.VerificationCode)
                     .IsRequired()
-                    .HasMaxLength(30)
+                    .HasMaxLength(16)
                     .HasColumnName("verification_code");
 
                 entity.Property(e => e.Verified)

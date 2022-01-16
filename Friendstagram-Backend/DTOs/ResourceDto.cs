@@ -10,7 +10,7 @@ namespace Friendstagram_Backend.DTOs
     {
         [Required]
         public int id_resource { get; set; }
-        [Required, MaxLength(45)]
+        [Required, MaxLength(64)]
         public string filename { get; set; }
         [Required, MaxLength(250)]
         public string path { get; set; }

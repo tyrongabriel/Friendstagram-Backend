@@ -10,9 +10,9 @@ namespace Friendstagram_Backend.DTOs
     {
         [Required, MaxLength(16)]
         public string groupCode { get; set; }
-        [Required, MaxLength(40)]
+        [Required, MaxLength(64)]
         public string username { get; set; }
-        [Required, MaxLength(60)]
+        [Required, MaxLength(64)]
         public string email { get; set; }
         [Required]
         public string password { get; set; }
