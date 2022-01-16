@@ -49,7 +49,7 @@ namespace Friendstagram_Backend
             {
                 provider.GetBytes(verificationBytes);
             }
-            return Encoding.ASCII.GetString(verificationBytes);
+            return Convert.ToBase64String(verificationBytes);
         }
     }
 }
