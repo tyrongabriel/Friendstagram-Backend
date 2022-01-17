@@ -31,12 +31,20 @@ namespace Friendstagram_Backend.Controllers
             {
                 User thisUser;
                 this.User.GetUser(DBContext, out thisUser, true);
-                Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
-                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Select(x => x.AsDto()).ToList();
-                posts.Take(items);
-                //KEY not implemented yet
 
-                return Ok(posts);
+                Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
+
+                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Select(x => x.AsDto()).ToList();
+                
+                posts.Take(items);
+                List<PostDto> postsToReturn = new List<PostDto>();
+                
+                for (int i = index; i < posts.Count; i++)
+                {
+                    postsToReturn.Add(posts[i]);
+                }
+
+                return Ok(postsToReturn);
                 
             }
             catch (Exception)
