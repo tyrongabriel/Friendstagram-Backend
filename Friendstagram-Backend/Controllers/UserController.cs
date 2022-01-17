@@ -48,7 +48,7 @@ namespace Friendstagram_Backend.Controllers
                 }
                 return Ok(foundUser.AsDto());
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
@@ -65,7 +65,7 @@ namespace Friendstagram_Backend.Controllers
                 List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
                 return Ok(users);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
@@ -108,7 +108,7 @@ namespace Friendstagram_Backend.Controllers
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
@@ -148,7 +148,7 @@ namespace Friendstagram_Backend.Controllers
                 }
                 
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
