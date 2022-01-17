@@ -32,8 +32,7 @@ namespace Friendstagram_Backend
                 heading = post.Heading,
                 description = post.Description,
                 created_at = post.CreatedAt.ToShortDateString(),
-                image_small = post.Resource.PathCompressed,
-                image = post.Resource.Path,
+                file = post.Resource.Path,
                 comments = post.Comments.Select(c => c.AsDto()).ToList(),
                 posted_by = post.User.AsDto()
             };
@@ -69,7 +68,6 @@ namespace Friendstagram_Backend
                 id_resource = resource.ResourceId,
                 filename = resource.Filename,
                 path = resource.Path,
-                path_compressed = resource.PathCompressed,
                 fileType = resource.FileType.AsDto()
             };
         }
@@ -131,7 +129,6 @@ namespace Friendstagram_Backend
             {
                 Filename = FileName,
                 Path = $"images/profiles/{FileName}.{type.Name}",
-                PathCompressed = $"images/profiles/{FileName}.{type.Name}",
                 FileType = type
             };
 

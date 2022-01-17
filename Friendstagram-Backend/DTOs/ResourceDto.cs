@@ -14,8 +14,6 @@ namespace Friendstagram_Backend.DTOs
         public string filename { get; set; }
         [Required, MaxLength(250)]
         public string path { get; set; }
-        [Required, MaxLength(250)]
-        public string path_compressed { get; set; }
         [Required]
         public FileTypeDto fileType { get; set; }
     }

@@ -9,6 +9,7 @@ namespace Friendstagram_Backend.Model
 {
     public partial class FriendstagramContext : DbContext
     {
+
         public FriendstagramContext(DbContextOptions<FriendstagramContext> options)
             : base(options)
         {
@@ -248,11 +249,6 @@ namespace Friendstagram_Backend.Model
                     .IsRequired()
                     .HasMaxLength(250)
                     .HasColumnName("path");
-
-                entity.Property(e => e.PathCompressed)
-                    .IsRequired()
-                    .HasMaxLength(250)
-                    .HasColumnName("path_compressed");
 
                 entity.HasOne(d => d.FileType)
                     .WithMany(p => p.Resources)

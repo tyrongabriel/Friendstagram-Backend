@@ -17,8 +17,7 @@ namespace Friendstagram_Backend.DTOs
         [Required]
         public string created_at { get; set; }
         [Required]
-        public string image_small { get; set; }
-        public string? image { get; set; }
+        public string file { get; set; }
         [Required]
         public ICollection<CommentDto> comments { get; set; }
         [Required]
