@@ -169,6 +169,22 @@ namespace Friendstagram_Backend.Controllers
             return Ok(new JWTTokenDto() { token = token });
         }
 
+        // GET api/user/authorized
+        [HttpGet("authorized")]
+        public IActionResult GetAuthorized()
+        {
+            User thisUser;
+            User.GetUser(DBContext, out thisUser, true);
+            if (thisUser == null)
+            {
+                return Unauthorized("Could not find User associated with token!");
+            }
+            else
+            {
+                return Ok(thisUser.AsDto());
+            }
+        }
+
         // POST api/user
         [AllowAnonymous]
         [HttpPost()]
