@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Friendstagram_Backend.DTOs;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -22,11 +23,28 @@ namespace Friendstagram_Backend.Controllers
 
         }
 
-        // 
-        [HttpGet]
-        public IActionResult GetPost()
+        //GET api/post
+        [HttpGet("")]
+        public IActionResult GetPost( [FromQuery] int index, [FromQuery] int items = 5)
         {
-            return NotFound();
+            try
+            {
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser, true);
+                Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
+                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Select(x => x.AsDto()).ToList();
+                posts.Take(items);
+                //KEY not implemented yet
+
+                return Ok(posts);
+                
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+
         }
     }
 }

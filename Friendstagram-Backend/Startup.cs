@@ -93,8 +93,6 @@ namespace Friendstagram_Backend
 
             app.UseStaticFiles();
 
-            
-
             app.UseRouting();
 
             app.UseCors(builder =>
