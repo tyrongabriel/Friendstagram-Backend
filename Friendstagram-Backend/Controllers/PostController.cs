@@ -25,16 +25,16 @@ namespace Friendstagram_Backend.Controllers
 
         //GET api/post
         [HttpGet("")]
-        public IActionResult GetPost( [FromQuery] int index = 0, [FromQuery] int items = 5)
+        public IActionResult GetPost([FromQuery] int index = 0, [FromQuery] int items = 5)
         {
             try
             {
                 User thisUser;
                 this.User.GetUser(DBContext, out thisUser, true);
 
-                Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
+                Group group = thisUser.Group;
 
-                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).Select(x => x.AsDto()).ToList();
+                List<PostDto> posts = DBContext.Posts.Where(p => p.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).Select(x => x.AsDto()).ToList();
                 
                 //throws this weird mysql errors when converted to DTO in upper line
                 return Ok(posts);
