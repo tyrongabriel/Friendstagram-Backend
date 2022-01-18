@@ -56,7 +56,7 @@ namespace Friendstagram_Backend.Controllers
 
         // GET api/user?authorized=true
         [HttpGet]
-        public IActionResult GetUsers([FromBody]bool authorized = false)
+        public IActionResult GetUsers([FromQuery]bool authorized = false)
         {
             try
             {
