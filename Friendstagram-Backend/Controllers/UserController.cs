@@ -54,16 +54,27 @@ namespace Friendstagram_Backend.Controllers
             }
         }
 
-        // GET api/user
+        // GET api/user?authorized=true
         [HttpGet]
-        public IActionResult GetUsers()
+        public IActionResult GetUsers([FromBody]bool authorized = false)
         {
             try
             {
                 User thisUser;
                 User.GetUser(DBContext, out thisUser);
-                List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
-                return Ok(users);
+                if (authorized)
+                {
+                    if (thisUser == null)
+                    {
+                        return Unauthorized("Could not find user associated with your authentication!");
+                    }
+                    return Ok(thisUser);
+                }
+                else
+                {
+                    List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
+                    return Ok(users);
+                }
             }
             catch (Exception )
             {
@@ -167,22 +178,6 @@ namespace Friendstagram_Backend.Controllers
             }
 
             return Ok(new JWTTokenDto() { token = token });
-        }
-
-        // GET api/user/authorized
-        [HttpGet("authorized")]
-        public IActionResult GetAuthorized()
-        {
-            User thisUser;
-            User.GetUser(DBContext, out thisUser, true);
-            if (thisUser == null)
-            {
-                return Unauthorized("Could not find User associated with token!");
-            }
-            else
-            {
-                return Ok(thisUser.AsDto());
-            }
         }
 
         // POST api/user
