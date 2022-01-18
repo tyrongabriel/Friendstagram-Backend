@@ -38,54 +38,40 @@ namespace Friendstagram_Backend.Controllers
         [HttpGet("{username}")]
         public IActionResult GetUser(string username)
         {
-            try
-            {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser);
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser);
 
-                User foundUser = DBContext.Users.FirstOrDefault(u => u.Username == username && u.GroupId == thisUser.GroupId);
-                if (foundUser == null)
-                {
-                    return NotFound($"Could not find a user with the username \"{username}\" in your group");
-                }
-                return Ok(foundUser.AsDto());
-            }
-            catch (Exception )
+            User foundUser = DBContext.Users.FirstOrDefault(u => u.Username == username && u.GroupId == thisUser.GroupId);
+            if (foundUser == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+                return NotFound($"Could not find a user with the username \"{username}\" in your group");
             }
+            return Ok(foundUser.AsDto());
         }
 
         // GET api/user?authorized=true
         [HttpGet]
         public IActionResult GetUsers([FromQuery]bool authorized = false)
         {
-            try
+            User thisUser;
+            User.GetUser(DBContext, out thisUser);
+            if (authorized)
             {
-                User thisUser;
-                User.GetUser(DBContext, out thisUser);
-                if (authorized)
+                if (thisUser == null)
                 {
-                    if (thisUser == null)
-                    {
-                        return Unauthorized("Could not find user associated with your authentication!");
-                    }
-                    return Ok(thisUser.AsDto());
+                    return Unauthorized("Could not find user associated with your authentication!");
                 }
-                else
-                {
-                    List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
-                    return Ok(users);
-                }
+                return Ok(thisUser.AsDto());
             }
-            catch (Exception )
+            else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+                List<UserDto> users = DBContext.Users.Where(u => u.GroupId == thisUser.GroupId).Select(u => u.AsDto()).ToList();
+                return Ok(users);
             }
         }
 
-        // PUT api/user/changeProfilePicture/{username}
-        [HttpPost("changeProfilePicture/{username}")]
+        // PATCH api/user/changeProfilePicture/{username}
+        [HttpPatch("changeProfilePicture/{username}")]
         public IActionResult ChangeProfilePicture(IFormFile image, string username)
         {
             User thisUser;
@@ -101,29 +87,21 @@ namespace Friendstagram_Backend.Controllers
         // PATCH api/user/changeUsername/{username}
         [HttpPatch("changeUsername/{username}")]
         public IActionResult ChangeUsername([FromBody] ChangeUsernameDto changeUser, string username)
-        {            
-            try
+        {
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
+            if (thisUser.Username == username)
             {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
-                if (thisUser.Username == username)
-                {
-                    thisUser.Username = changeUser.usernameNew;
-                    DBContext.SaveChanges();
+                thisUser.Username = changeUser.usernameNew;
+                DBContext.SaveChanges();
 
-                    UserDto newUserDto = thisUser.AsDto(); // DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
+                UserDto newUserDto = thisUser.AsDto(); // DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == newUser.UserId).AsDto();
 
-                    return Ok(newUserDto);
-                }
-                else
-                {
-                    return Unauthorized("Unable to change username of another user!");
-                }
-
+                return Ok(newUserDto);
             }
-            catch (Exception )
+            else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+                return Unauthorized("Unable to change username of another user!");
             }
         }
 
@@ -131,39 +109,31 @@ namespace Friendstagram_Backend.Controllers
         [HttpPatch("changePassword/{username}")]
         public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword, string username)
         {
-            try
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
+            if (thisUser.Username == username)
             {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
-                if (thisUser.Username == username)
+                if (thisUser.Password == SecurityManager.CreateSha256Hash(changePassword.password, thisUser.Salt))
                 {
-                    if (thisUser.Password == SecurityManager.CreateSha256Hash(changePassword.password, thisUser.Salt))
-                    {
-                        string newSalt = SecurityManager.CreateSalt();
-                        string hashedPassword = SecurityManager.CreateSha256Hash(changePassword.newPassword, newSalt);
+                    string newSalt = SecurityManager.CreateSalt();
+                    string hashedPassword = SecurityManager.CreateSha256Hash(changePassword.newPassword, newSalt);
 
-                        thisUser.Password = hashedPassword;
-                        thisUser.Salt = newSalt;
+                    thisUser.Password = hashedPassword;
+                    thisUser.Salt = newSalt;
 
-                        DBContext.SaveChanges();
+                    DBContext.SaveChanges();
 
-                        UserDto newUserDto = thisUser.AsDto();
-                        return Ok(newUserDto);
-                    }
-                    else
-                    {
-                        return Unauthorized("Wrong Password!");
-                    }
+                    UserDto newUserDto = thisUser.AsDto();
+                    return Ok(newUserDto);
                 }
                 else
                 {
-                    return Unauthorized("Unable to change username of another user!");
+                    return Unauthorized("Wrong Password!");
                 }
-                
             }
-            catch (Exception )
+            else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+                return Unauthorized("Unable to change username of another user!");
             }
         }
 
@@ -171,8 +141,7 @@ namespace Friendstagram_Backend.Controllers
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticationDto userCredits)
-        {
-            
+        {            
             var token = JwtAuthenticationManager.Authenticate(userCredits.Email, userCredits.Password);
 
             if (string.IsNullOrEmpty(token))
@@ -234,8 +203,6 @@ namespace Friendstagram_Backend.Controllers
 
             return CreatedAtAction(nameof(GetUser), new { userCredits.username }, DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
         }
-
-
 
         // GET api/user/{code}
         [AllowAnonymous]
