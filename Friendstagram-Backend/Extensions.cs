@@ -57,7 +57,7 @@ namespace Friendstagram_Backend
                 id_user = comment.Post.UserId,
                 comment = comment.Text,
                 created_at = comment.CreatedAt.ToShortDateString(),
-                user = comment.Post.User.AsDto()
+                user = comment.User.AsDto()
             };
         }
 

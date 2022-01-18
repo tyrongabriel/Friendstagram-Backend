@@ -10,6 +10,7 @@ namespace Friendstagram_Backend.Model
         public User()
         {
             ChatMessages = new HashSet<ChatMessage>();
+            Comments = new HashSet<Comment>();
             Posts = new HashSet<Post>();
         }
 
@@ -26,6 +27,7 @@ namespace Friendstagram_Backend.Model
         public virtual Group Group { get; set; }
         public virtual Resource ProfilePicture { get; set; }
         public virtual ICollection<ChatMessage> ChatMessages { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
     }
 }

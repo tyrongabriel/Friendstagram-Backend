@@ -9,6 +9,9 @@ namespace Friendstagram_Backend.Model
 {
     public partial class FriendstagramContext : DbContext
     {
+        public FriendstagramContext()
+        {
+        }
 
         public FriendstagramContext(DbContextOptions<FriendstagramContext> options)
             : base(options)
@@ -77,13 +80,15 @@ namespace Friendstagram_Backend.Model
 
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.HasKey(e => new { e.CommentId, e.PostId })
+                entity.HasKey(e => new { e.CommentId, e.PostId, e.UserId })
                     .HasName("PRIMARY")
-                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
                 entity.ToTable("comment");
 
                 entity.HasIndex(e => e.PostId, "fk_comment_post1_idx");
+
+                entity.HasIndex(e => e.UserId, "fk_comment_user1_idx");
 
                 entity.HasIndex(e => e.CommentId, "id_comment_UNIQUE")
                     .IsUnique();
@@ -96,6 +101,10 @@ namespace Friendstagram_Backend.Model
                 entity.Property(e => e.PostId)
                     .HasColumnType("int(11)")
                     .HasColumnName("postId");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnType("int(11)")
+                    .HasColumnName("userId");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
@@ -112,6 +121,13 @@ namespace Friendstagram_Backend.Model
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_comment_post1");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Comments)
+                    .HasPrincipalKey(p => p.UserId)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_comment_user1");
             });
 
             modelBuilder.Entity<FileType>(entity =>
