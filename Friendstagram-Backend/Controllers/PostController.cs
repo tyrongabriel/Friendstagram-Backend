@@ -25,7 +25,7 @@ namespace Friendstagram_Backend.Controllers
 
         //GET api/post
         [HttpGet("")]
-        public IActionResult GetPost( [FromQuery] int index, [FromQuery] int items = 5)
+        public IActionResult GetPost( [FromQuery] int index = 0, [FromQuery] int items = 5)
         {
             try
             {
@@ -33,23 +33,15 @@ namespace Friendstagram_Backend.Controllers
                 this.User.GetUser(DBContext, out thisUser, true);
 
                 Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
-
-                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Select(x => x.AsDto()).ToList();
                 
-                posts.Take(items);
-                List<PostDto> postsToReturn = new List<PostDto>();
+                List<Post> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).ToList();
                 
-                for (int i = index; i < posts.Count; i++)
-                {
-                    postsToReturn.Add(posts[i]);
-                }
-
-                return Ok(postsToReturn);
+                //throws this weird mysql errors when converted to DTO in upper line
+                return Ok(posts.Select(x => x.AsDto()));
                 
             }
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
             }
 
