@@ -46,6 +46,10 @@ namespace Friendstagram_Backend.Controllers
             User thisUser;
             User.GetUser(DBContext, out thisUser, true);
             Resource contentResource = postContent.AsResource(DBContext);
+            DBContext.Resources.Add(contentResource);
+            DBContext.SaveChanges();
+            contentResource.Filename = contentResource.ResourceId + postContent.FileName;
+            contentResource.Path = "resources/posts/" + contentResource.Filename;
 
             Post newPost = new Post()
             {
@@ -59,7 +63,7 @@ namespace Friendstagram_Backend.Controllers
             DBContext.Posts.Add(newPost);
 
             var stream = postContent.OpenReadStream();
-            StorageManager.SaveFile(StorageManager.ImagePath + $"posts/{contentResource.ResourceId + postContent.FileName}", stream);
+            StorageManager.SaveFile(StorageManager.ImagePath + $"posts/{contentResource.Filename}", stream);
 
             DBContext.SaveChanges();
 

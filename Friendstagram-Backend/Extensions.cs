@@ -128,7 +128,7 @@ namespace Friendstagram_Backend
             Resource newFile = new Resource()
             {
                 Filename = FileName,
-                Path = $"images/profiles/{FileName}.{type.Name}",
+                Path = $"resources/users/{FileName}.{type.Name}",
                 FileType = type
             };
 
