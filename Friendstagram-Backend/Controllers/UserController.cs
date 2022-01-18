@@ -81,9 +81,20 @@ namespace Friendstagram_Backend.Controllers
                 Resource imageResource = image.AsResource(DBContext);
                 DBContext.Resources.Add(imageResource);
                 DBContext.SaveChanges();
+                imageResource.Filename = imageResource.ResourceId + image.FileName;
+                imageResource.Path = "resources/users/" + imageResource.Filename;
+
+                StorageManager.DeleteFile("wwwroot/" + thisUser.ProfilePicture.Path);
+
+                thisUser.ProfilePicture = null;
+                thisUser.ProfilePictureId = imageResource.ResourceId;
+                thisUser.ProfilePicture = imageResource;
+                DBContext.SaveChanges();
 
                 var stream = image.OpenReadStream();
-                StorageManager.SaveFile(StorageManager.ImagePath + $"users/{imageResource.ResourceId + image.FileName}", stream);
+                StorageManager.SaveFile(StorageManager.ImagePath + $"users/{imageResource.Filename}", stream);
+
+                DBContext.SaveChanges();
             }
             return Ok(thisUser.AsDto());
         }

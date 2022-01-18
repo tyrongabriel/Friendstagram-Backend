@@ -17,5 +17,10 @@ namespace Friendstagram_Backend
                 fileStream.CopyTo(saveFileStream);
             }
         }
+
+        public static void DeleteFile(string path)
+        {
+            File.Delete(path);
+        }
     }
 }
