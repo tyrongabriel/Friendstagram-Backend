@@ -56,7 +56,7 @@ namespace Friendstagram_Backend.Controllers
 
         // GET api/user?authorized=true
         [HttpGet]
-        public IActionResult GetUsers([FromBody]bool authorized = false)
+        public IActionResult GetUsers([FromQuery]bool authorized = false)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace Friendstagram_Backend.Controllers
                     {
                         return Unauthorized("Could not find user associated with your authentication!");
                     }
-                    return Ok(thisUser);
+                    return Ok(thisUser.AsDto());
                 }
                 else
                 {
