@@ -33,11 +33,11 @@ namespace Friendstagram_Backend.Controllers
                 this.User.GetUser(DBContext, out thisUser, true);
 
                 Group group = DBContext.Groups.Where(group => group.GroupId == thisUser.GroupId).FirstOrDefault();
-                
-                List<Post> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).ToList();
+
+                List<PostDto> posts = DBContext.Posts.Where(post => post.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).Select(x => x.AsDto()).ToList();
                 
                 //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(posts.Select(x => x.AsDto()));
+                return Ok(posts);
                 
             }
             catch (Exception)
