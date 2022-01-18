@@ -9,10 +9,6 @@ namespace Friendstagram_Backend.Model
 {
     public partial class FriendstagramContext : DbContext
     {
-        public FriendstagramContext()
-        {
-        }
-
         public FriendstagramContext(DbContextOptions<FriendstagramContext> options)
             : base(options)
         {
