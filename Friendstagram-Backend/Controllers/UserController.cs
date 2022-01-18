@@ -17,6 +17,8 @@ using System.Net;
 using System.Web;
 using System.IO;
 using Microsoft.AspNetCore.Cors;
+using System.Net.Mail;
+using System.Configuration;
 
 namespace Friendstagram_Backend.Controllers
 {
@@ -201,7 +203,7 @@ namespace Friendstagram_Backend.Controllers
             }
 
             string salt = SecurityManager.CreateSalt();
-
+            string verificationCode = SecurityManager.CreateVerifcationCode();
             User RegisteredUser = new User()
             {
                 Username = userCredits.username,
@@ -209,12 +211,44 @@ namespace Friendstagram_Backend.Controllers
                 Password = SecurityManager.CreateSha256Hash(userCredits.password, salt),
                 Salt = salt,
                 GroupId = registerIntoGroup.GroupId,
-                VerificationCode = SecurityManager.CreateVerifcationCode(),
-                ProfilePictureId = 1
+                VerificationCode = verificationCode,
+                ProfilePictureId = 1,
+                Verified = 0
+                
             };
+
+
             DBContext.Users.Add(RegisteredUser);
             DBContext.SaveChanges();
+
+            var smtpClient = new SmtpClient("smtp.gmail.com")
+            {
+                Port = 587,
+                Credentials = new NetworkCredential(ConfigurationManager.AppSettings["Email"], ConfigurationManager.AppSettings["Email Password"]),
+                EnableSsl = true,
+            };
+
+            smtpClient.Send(ConfigurationManager.AppSettings["Email"], userCredits.email, "Verification Code", "Please verify your Friendstagram Account by clicking on the following link: https://localhost:44372/api/user/verify/" + verificationCode);
+
+
             return CreatedAtAction(nameof(GetUser), new { userCredits.username }, DBContext.Users.Include(u => u.ProfilePicture).FirstOrDefault(u => u.UserId == RegisteredUser.UserId).AsDto());
         }
-    }
+
+
+
+        // GET api/user/{code}
+        [AllowAnonymous]
+        [HttpGet("verify/{code}")]
+        public ActionResult<UserDto> Verify(string code)
+        {
+            User userToUpdate = DBContext.Users.Where(u => u.VerificationCode == code).FirstOrDefault();
+
+            if (userToUpdate == null) return NotFound();
+
+            userToUpdate.Verified = 1;
+            DBContext.SaveChanges();
+
+            return Ok();
+        }
+     }
 }
