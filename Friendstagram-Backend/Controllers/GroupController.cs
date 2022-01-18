@@ -24,21 +24,21 @@ namespace Friendstagram_Backend.Controllers
 
 
 
-        // GET api/{GroupCode}
-        //[HttpGet]
-        //public ActionResult<GroupDto> GetGroup(string GroupCode)
-        //{
-        //    using (FriendstagramContext DBContext = new FriendstagramContext())
-        //    {
-        //        if (DBContext.Database.CanConnect())
-        //        {
-        //            return DBContext.Groups.FirstOrDefault(g => g.Code == GroupCode).AsDto();
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
-        //    }
-        //}
+        // GET api/group/{username}
+        [HttpGet("{username}")]
+        public IActionResult GetGroup(string username)
+        {
+            User thisUser;
+            User.GetUser(DBContext, out thisUser, true);
+            if (thisUser.Username == username)
+            {
+                Group returnGroup = DBContext.Groups.FirstOrDefault(g => g.GroupId == thisUser.GroupId);
+                return Ok(returnGroup.AsDto());
+            }
+            else
+            {
+                return Unauthorized("Not authorized for group of this User");
+            }
+        }
     }
 }
