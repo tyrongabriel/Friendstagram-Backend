@@ -12,6 +12,10 @@ using Friendstagram_Backend.DTOs;
 
 namespace Friendstagram_Backend.Controllers
 {
+    [Authorize]
+    [EnableCors]
+    [Route("api/[controller]")]
+    [ApiController]
     public class CommentController : FriendstagramControllerBase
     {
 
