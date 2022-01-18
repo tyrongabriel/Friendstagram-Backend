@@ -27,51 +27,46 @@ namespace Friendstagram_Backend.Controllers
         [HttpGet("")]
         public IActionResult GetChat()
         {
-            try
-            {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
 
-                Group group = thisUser.Group;
+            Group group = thisUser.Group;
 
-                List<ChatMessage> chatMessages = DBContext.ChatMessages.Where(c => c.User.Group.GroupId == thisUser.GroupId).OrderByDescending(c => c.CreatedAt).ToList();
+            List<ChatMessage> chatMessages = DBContext.ChatMessages.Where(c => c.User.Group.GroupId == thisUser.GroupId).OrderByDescending(c => c.CreatedAt).ToList();
                
 
-                //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(chatMessages.Select(x => x.AsDto()));
+            //throws this weird mysql errors when converted to DTO in upper line
+            return Ok(chatMessages.Select(x => x.AsDto()));
 
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            
+            
+            //return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            
 
         }
         [HttpPost("")]
         public IActionResult PostChat([FromBody] CreateChatMessageDto incommingChatMessage)
         {
-            try
+            
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
+            Group group = thisUser.Group;
+
+            ChatMessage newChatMessage = new ChatMessage()
             {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
-                Group group = thisUser.Group;
+                Content = incommingChatMessage.content,
+                User = thisUser,
+            };
 
-                ChatMessage newChatMessage = new ChatMessage()
-                {
-                    Content = incommingChatMessage.content,
-                    User = thisUser,
-                };
-
-                DBContext.ChatMessages.Add(newChatMessage);
-                DBContext.SaveChanges();
-                return Ok(newChatMessage);
+            DBContext.ChatMessages.Add(newChatMessage);
+            DBContext.SaveChanges();
+            return Ok(newChatMessage.AsDto());
               
 
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            
+            
+            //return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            
 
         }
 
