@@ -34,11 +34,31 @@ namespace Friendstagram_Backend.Controllers
 
                 Group group = thisUser.Group;
 
-                List<PostDto> posts = DBContext.Posts.Where(p => p.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).Select(x => x.AsDto()).ToList();
+                List<Post> posts = DBContext.Posts.Where(p => p.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).ToList();
                 
                 //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(posts);
+                return Ok(posts.Select(x => x.AsDto()));
                 
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+
+        }
+
+        //GET api/post
+        [HttpPost("")]
+        public IActionResult CreatePost()
+        {
+            try
+            {
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser, true);
+                Group group = thisUser.Group;
+
+                return Ok();
+
             }
             catch (Exception)
             {
