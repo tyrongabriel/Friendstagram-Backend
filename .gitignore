@@ -6,6 +6,10 @@
 # Connection Strings Config
 _*
 
+# Ignore Sensitive User-Files
+wwwroot/resources/user/*
+wwwroot/resources/posts/*
+
 
 # User-specific files
 *.rsuser
