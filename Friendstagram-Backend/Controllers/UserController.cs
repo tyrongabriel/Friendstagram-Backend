@@ -80,6 +80,9 @@ namespace Friendstagram_Backend.Controllers
             {
                 DBContext.Resources.Add(image.AsResource(DBContext));
                 DBContext.SaveChanges();
+
+                var stream = image.OpenReadStream();
+                StorageManager.SaveFile(StorageManager.ImagePath + $"profiles/{image.FileName}", stream);
             }
             return Ok(thisUser.AsDto());
         }
