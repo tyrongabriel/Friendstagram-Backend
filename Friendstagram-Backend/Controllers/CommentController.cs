@@ -27,57 +27,41 @@ namespace Friendstagram_Backend.Controllers
         [HttpGet("{postId}")]
         public IActionResult GetComments(int postId)
         {
-            try
-            {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
 
-                Group group = thisUser.Group;
+            Group group = thisUser.Group;
 
-                List<Comment> comment = DBContext.Comments.Where(c => c.PostId == postId && group.GroupId == thisUser.GroupId).ToList();
+            List<Comment> comment = DBContext.Comments.Where(c => c.PostId == postId && group.GroupId == thisUser.GroupId).ToList();
 
-                //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(comment.Select(x => x.AsDto()));
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            //throws this weird mysql errors when converted to DTO in upper line
+            return Ok(comment.Select(x => x.AsDto()));
 
         }
         //POST api/comment
         [HttpPost("")]
         public IActionResult PostComment([FromBody] CreateCommentDto newComment)
         {
-            try
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
+
+
+            Group group = thisUser.Group;
+            Post post = DBContext.Posts.Where(p => p.PostId == newComment.postId).FirstOrDefault();
+
+            Comment comment = new Comment()
             {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
+                PostId = newComment.postId,
+                CreatedAt = DateTime.Now,
+                Text = newComment.text,
+                User = thisUser,
+                Post = post,
 
-                 
-                Group group = thisUser.Group;
-                Post post = DBContext.Posts.Where(p => p.PostId == newComment.postId).FirstOrDefault();
+            };
 
-                Comment comment = new Comment()
-                {
-                    PostId = newComment.postId,
-                    CreatedAt = DateTime.Now,
-                    Text = newComment.text,
-                    User = thisUser,
-                    Post = post,
-                    
-                };
-
-                DBContext.Comments.Add(comment);
-                DBContext.SaveChanges();
-                return Ok(comment.AsDto());
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            DBContext.Comments.Add(comment);
+            DBContext.SaveChanges();
+            return Ok(comment.AsDto());
 
         }
     }

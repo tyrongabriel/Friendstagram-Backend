@@ -27,23 +27,15 @@ namespace Friendstagram_Backend.Controllers
         [HttpGet("")]
         public IActionResult GetPost([FromQuery] int index = 0, [FromQuery] int items = 5)
         {
-            try
-            {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
 
-                Group group = thisUser.Group;
+            Group group = thisUser.Group;
 
-                List<Post> posts = DBContext.Posts.Where(p => p.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).ToList();
-                
-                //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(posts.Select(x => x.AsDto()));
-                
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            List<Post> posts = DBContext.Posts.Where(p => p.User.GroupId == group.GroupId).OrderByDescending(p => p.CreatedAt).Skip(index).Take(items).ToList();
+
+            //throws this weird mysql errors when converted to DTO in upper line
+            return Ok(posts.Select(x => x.AsDto()));
 
         }
 
@@ -51,19 +43,11 @@ namespace Friendstagram_Backend.Controllers
         [HttpPost("")]
         public IActionResult CreatePost()
         {
-            try
-            {
-                User thisUser;
-                this.User.GetUser(DBContext, out thisUser, true);
-                Group group = thisUser.Group;
+            User thisUser;
+            this.User.GetUser(DBContext, out thisUser, true);
+            Group group = thisUser.Group;
 
-                return Ok();
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
-            }
+            return Ok();
 
         }
     }
