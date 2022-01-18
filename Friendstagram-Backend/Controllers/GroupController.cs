@@ -40,5 +40,23 @@ namespace Friendstagram_Backend.Controllers
                 return Unauthorized("Not authorized for group of this User");
             }
         }
+
+
+        // PATCH api/group/code
+        [HttpPatch("code")]
+        public IActionResult GenerateNewCode()
+        {
+            User thisUser;
+            User.GetUser(DBContext, out thisUser);
+            Random rndGen = new Random();
+            string code = "";
+            for (int i = 0; i < 16; i++)
+            {
+                code += rndGen.Next(10);
+            }
+            thisUser.Group.Code = code;
+            DBContext.SaveChanges();
+            return Ok(new { code = code });
+        }
     }
 }
