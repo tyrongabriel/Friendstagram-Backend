@@ -16,16 +16,16 @@ namespace Friendstagram_Backend.Controllers
     [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
-    public class CommentController : FriendstagramControllerBase
+    public class ChatController : FriendstagramControllerBase
     {
 
-        public CommentController(FriendstagramContext dbContext, IJwtAuthenticationManager jwtAuthenticationManager) : base(dbContext, jwtAuthenticationManager)
+        public ChatController(FriendstagramContext dbContext, IJwtAuthenticationManager jwtAuthenticationManager) : base(dbContext, jwtAuthenticationManager)
         {
 
         }
         //GET api/comment/{postId}
-        [HttpGet("{postId}")]
-        public IActionResult GetComments(int postId)
+        [HttpGet("")]
+        public IActionResult GetChat()
         {
             try
             {
@@ -34,10 +34,11 @@ namespace Friendstagram_Backend.Controllers
 
                 Group group = thisUser.Group;
 
-                List<Comment> comment = DBContext.Comments.Where(c => c.PostId == postId && group.GroupId == thisUser.GroupId).ToList();
+                List<ChatMessage> chatMessages = DBContext.ChatMessages.Where(c => c.User.Group.GroupId == thisUser.GroupId).OrderByDescending(c => c.CreatedAt).ToList();
+               
 
                 //throws this weird mysql errors when converted to DTO in upper line
-                return Ok(comment.Select(x => x.AsDto()));
+                return Ok(chatMessages.Select(x => x.AsDto()));
 
             }
             catch (Exception)
@@ -46,32 +47,25 @@ namespace Friendstagram_Backend.Controllers
             }
 
         }
-        //POST api/comment
         [HttpPost("")]
-        public IActionResult PostComment([FromBody] CreateCommentDto newComment)
+        public IActionResult PostChat([FromBody] CreateChatMessageDto incommingChatMessage)
         {
             try
             {
                 User thisUser;
                 this.User.GetUser(DBContext, out thisUser, true);
-
-                 
                 Group group = thisUser.Group;
-                Post post = DBContext.Posts.Where(p => p.PostId == newComment.postId).FirstOrDefault();
 
-                Comment comment = new Comment()
+                ChatMessage newChatMessage = new ChatMessage()
                 {
-                    PostId = newComment.postId,
-                    CreatedAt = DateTime.Now,
-                    Text = newComment.text,
+                    Content = incommingChatMessage.content,
                     User = thisUser,
-                    Post = post,
-                    
                 };
 
-                DBContext.Comments.Add(comment);
+                DBContext.ChatMessages.Add(newChatMessage);
                 DBContext.SaveChanges();
-                return Ok(comment.AsDto());
+                return Ok(newChatMessage);
+              
 
             }
             catch (Exception)
@@ -80,5 +74,6 @@ namespace Friendstagram_Backend.Controllers
             }
 
         }
+
     }
 }

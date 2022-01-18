@@ -30,6 +30,7 @@ namespace Friendstagram_Backend.Model
             {
                 return null;
             }
+            if (authUser.Verified == 0) return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Convert.FromBase64String(Key);

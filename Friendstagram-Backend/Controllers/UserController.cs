@@ -172,6 +172,7 @@ namespace Friendstagram_Backend.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticationDto userCredits)
         {
+            
             var token = JwtAuthenticationManager.Authenticate(userCredits.Email, userCredits.Password);
 
             if (string.IsNullOrEmpty(token))
