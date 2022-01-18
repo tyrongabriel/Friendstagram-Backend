@@ -39,7 +39,7 @@ namespace Friendstagram_Backend.Controllers
 
         }
 
-        //GET api/post
+        //POST api/post
         [HttpPost("")]
         public IActionResult CreatePost()
         {

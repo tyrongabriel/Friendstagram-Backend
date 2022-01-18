@@ -78,8 +78,12 @@ namespace Friendstagram_Backend.Controllers
             User.GetUser(DBContext, out thisUser, true);
             if (thisUser.Username == username)
             {
-                DBContext.Resources.Add(image.AsResource(DBContext));
+                Resource imageResource = image.AsResource(DBContext);
+                DBContext.Resources.Add(imageResource);
                 DBContext.SaveChanges();
+
+                var stream = image.OpenReadStream();
+                StorageManager.SaveFile(StorageManager.ImagePath + $"users/{imageResource.ResourceId + image.FileName}", stream);
             }
             return Ok(thisUser.AsDto());
         }
