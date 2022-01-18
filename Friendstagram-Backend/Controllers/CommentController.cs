@@ -23,9 +23,9 @@ namespace Friendstagram_Backend.Controllers
         {
 
         }
-        //GET api/comment
-        [HttpGet("")]
-        public IActionResult GetComments([FromQuery] int index = 0, [FromQuery] int items = 5)
+        //GET api/comment/{postId}
+        [HttpGet("{postId}")]
+        public IActionResult GetComments(int postId)
         {
             try
             {
@@ -34,10 +34,44 @@ namespace Friendstagram_Backend.Controllers
 
                 Group group = thisUser.Group;
 
-                List<Comment> comment = DBContext.Comments.Where(c => c.PostId == group.GroupId).ToList();
+                List<Comment> comment = DBContext.Comments.Where(c => c.PostId == postId && group.GroupId == thisUser.GroupId).ToList();
 
                 //throws this weird mysql errors when converted to DTO in upper line
                 return Ok(comment.Select(x => x.AsDto()));
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong!");
+            }
+
+        }
+        //POST api/comment
+        [HttpPost("")]
+        public IActionResult PostComment([FromBody] CreateCommentDto newComment)
+        {
+            try
+            {
+                User thisUser;
+                this.User.GetUser(DBContext, out thisUser, true);
+
+                 
+                Group group = thisUser.Group;
+                Post post = DBContext.Posts.Where(p => p.PostId == newComment.postId).FirstOrDefault();
+
+                Comment comment = new Comment()
+                {
+                    PostId = newComment.postId,
+                    CreatedAt = DateTime.Now,
+                    Text = newComment.text,
+                    User = thisUser,
+                    Post = post,
+                    
+                };
+
+                DBContext.Comments.Add(comment);
+                DBContext.SaveChanges();
+                return Ok(comment.AsDto());
 
             }
             catch (Exception)
