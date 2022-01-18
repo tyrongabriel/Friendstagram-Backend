@@ -6,6 +6,10 @@
 # Connection Strings Config
 _*
 
+# Ignore Sensitive User-Files
+Friendstagram-Backend/wwwroot/resources/users/*
+Friendstagram-Backend/wwwroot/resources/posts/*
+
 
 # User-specific files
 *.rsuser
