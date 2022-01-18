@@ -39,16 +39,31 @@ namespace Friendstagram_Backend.Controllers
 
         }
 
-        //POST api/post
-        [HttpPost("")]
-        public IActionResult CreatePost()
-        {
+        // POST api/post
+        [HttpPost()]
+        public IActionResult CreatePost([FromForm] CreatePostDto creatingPost, IFormFile postContent)
+        {            
             User thisUser;
-            this.User.GetUser(DBContext, out thisUser, true);
-            Group group = thisUser.Group;
+            User.GetUser(DBContext, out thisUser, true);
+            Resource contentResource = postContent.AsResource(DBContext);
 
-            return Ok();
+            Post newPost = new Post()
+            {
+                Heading = creatingPost.heading,
+                Description = creatingPost.description,
+                CreatedAt = DateTime.UtcNow,
+                Resource = contentResource,
+                User = thisUser                
+            };
 
+            DBContext.Posts.Add(newPost);
+
+            var stream = postContent.OpenReadStream();
+            StorageManager.SaveFile(StorageManager.ImagePath + $"posts/{contentResource.ResourceId + postContent.FileName}", stream);
+
+            DBContext.SaveChanges();
+
+            return Ok(newPost.AsDto());
         }
     }
 }
